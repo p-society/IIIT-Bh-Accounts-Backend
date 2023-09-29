@@ -83,7 +83,7 @@ async def get_entities_names():
     # Get the names of all entities in the collection
     names = [entity["name"] for entity in users.find()]
     # Return the names as a JSON object
-    return {"names": names}
+    return names
 
 @app.post("/transaction")
 async def transfer_money(transaction: Transaction):
