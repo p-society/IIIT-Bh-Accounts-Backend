@@ -44,7 +44,7 @@ async def get_entities():
     entities = [entity for entity in users.find()]
     for entity in entities:
         entity["_id"] = str(entity["_id"])
-    return {"entities": entities}
+    return entities
 
 @app.post("/entities/add")
 async def add_entity(entity: Entity):
@@ -115,4 +115,4 @@ async def filter_transactions(sender: Optional[str] = None, receiver: Optional[s
     for transaction in transactions_list:
         transaction["_id"] = str(transaction["_id"])
     transactions_with_id = [Transaction(**transaction) for transaction in transactions_list]
-    return {"transactions": transactions_with_id}
+    return transactions_with_id
