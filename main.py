@@ -62,7 +62,7 @@ async def get_entities_sum():
     result = users.aggregate([{"$group": {"_id": None, "total": {"$sum": "$current_balance"}}}])
     return {"sum": result.next()["total"]}
 
-@app.post("/entities/add_amount")
+@app.post("/transaction/add_all")
 async def add_amount_to_entities(amount: float):
     weightage_sum = users.aggregate([{"$group": {"_id": None, "total": {"$sum": "$weightage"}}}]).next()["total"]
     amount_per_weight = amount / weightage_sum
