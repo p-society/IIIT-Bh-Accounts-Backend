@@ -114,6 +114,3 @@ async def filter_transactions(sender: Optional[str] = None, receiver: Optional[s
         transaction["_id"] = str(transaction["_id"])
     transactions_with_id = [Transaction(**transaction) for transaction in transactions_list]
     return {"transactions": transactions_with_id}
-
-if __name__ == "__main__":
-    uvicorn.run(app, host="127.0.0.1", port=3000)
