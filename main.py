@@ -1,6 +1,5 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-import uvicorn
 from pymongo import MongoClient
 from pydantic import BaseModel
 from bson import ObjectId
@@ -33,8 +32,8 @@ class Transaction(BaseModel):
     sender: str
     receiver: str
     amount: float
-    date: str = datetime.now().strftime("%Y-%m-%d")
-    time: str = datetime.now().strftime("%H:%M:%S")
+    date: str
+    time: str
 
 @app.get("/")
 async def root():
@@ -73,7 +72,9 @@ async def add_amount_to_entities(amount: float):
         new_balance = current_balance + (amount_per_weight * weightage)
         users.update_one({"_id": entity["_id"]}, {"$set": {"current_balance": new_balance}})
     # Record the transaction from admin to all entities
-    transaction = Transaction(sender="Admin", receiver="All Entities", amount=amount)
+    current_datetime = datetime.now()
+    transaction = Transaction(sender="Admin", receiver="All Entities", amount=amount,
+                              date=current_datetime.strftime("%Y-%m-%d"), time=current_datetime.strftime("%H:%M:%S"))
     transactions.insert_one(transaction.dict())
     return {"message": "Amount added to entities successfully"}
 
@@ -96,9 +97,10 @@ async def transfer_money(transaction: Transaction):
     receiver_new_balance = receiver_entity["current_balance"] + transaction.amount
     users.update_one({"_id": sender_entity["_id"]}, {"$set": {"current_balance": sender_new_balance}})
     users.update_one({"_id": receiver_entity["_id"]}, {"$set": {"current_balance": receiver_new_balance}})
+    current_datetime = datetime.now()
     transaction_dict = transaction.dict()
-    transaction_dict["date"] = datetime.now().strftime("%Y-%m-%d")
-    transaction_dict["time"] = datetime.now().strftime("%H:%M:%S")
+    transaction_dict["date"] = current_datetime.strftime("%Y-%m-%d")
+    transaction_dict["time"] = current_datetime.strftime("%H:%M:%S")
     transactions.insert_one(transaction_dict)
     return {"message": "Transaction recorded successfully"}
 
