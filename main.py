@@ -27,6 +27,7 @@ class Entity(BaseModel):
     name: str
     weightage: float
     current_balance: float
+    password: str
 
 class Transaction(BaseModel):
     sender: str
@@ -37,7 +38,7 @@ class Transaction(BaseModel):
 
 @app.get("/")
 async def root():
-    return {"message": "Hello World"}
+    return {"message": "Everything is working fine"}
 
 @app.get("/entities")
 async def get_entities():
@@ -45,6 +46,14 @@ async def get_entities():
     for entity in entities:
         entity["_id"] = str(entity["_id"])
     return entities
+
+@app.post("/entities/login")
+async def login_entity(name :str, password :str):
+    entity = users.find_one({"name": name, "password": password})
+    if entity:
+        entity["_id"] = str(entity["_id"])
+        return entity
+    return {"message": "Invalid credentials"}
 
 @app.post("/entities/add")
 async def add_entity(entity: Entity):
